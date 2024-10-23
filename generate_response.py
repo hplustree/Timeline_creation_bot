@@ -50,27 +50,4 @@ def generate_timeline(requirement_chunks):
     # Extract the generated timeline from the response
     timeline_text = response.choices[0].message.content
 
-    # Save the timeline as a CSV file
-    save_timeline_to_csv(timeline_text)
     return timeline_text
-
-def save_timeline_to_csv(timeline_text):
-    """
-    Saves the provided timeline text to a CSV file.
-    """
-    # Define the CSV file path
-    csv_file_path = 'project_timeline.csv'
-
-    lines = timeline_text.strip().split('\n')
-    with open(csv_file_path, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        for line in lines:
-            row = line.split(',')
-            writer.writerow(row)
-
-    print(f"Timeline successfully saved to {csv_file_path}")
-
-    return csv_file_path
-
-# Example usage
-generate_timeline(chunks)

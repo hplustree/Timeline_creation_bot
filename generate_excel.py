@@ -156,5 +156,6 @@ def process_gpt_timeline_response(csv_content):
             os.remove('project_timeline_temp.xlsx')
 
         print("Timeline saved as 'project_timeline.xlsx' with merged cells and adjusted column widths.")
+        return 'project_timeline.xlsx'
     else:
         print("No CSV content found in the GPT response.")

@@ -1,5 +1,6 @@
 import streamlit as st
-from generate_response import generate_timeline, save_timeline_to_csv
+from generate_response import generate_timeline
+from generate_excel import process_gpt_timeline_response
 from loaders import split_file
 import os
 
@@ -17,21 +18,21 @@ if uploaded_file is not None:
 
     # Split the file into chunks
     chunks = split_file(file_path)
-    
+    print(f"{file_path=}")
     # Generate timeline button
     if st.button("Generate Timeline"):
         timeline_text = generate_timeline(chunks)
-        # Save timeline to CSV
-        csv_file_path = save_timeline_to_csv(timeline_text)
+        # Save timeline to Excel
+        excel_file_path = process_gpt_timeline_response(timeline_text)
 
         st.subheader("Generated Timeline:")
         st.text(timeline_text) 
-        with open(csv_file_path, 'rb') as f:
+        with open(excel_file_path, 'rb') as f:
             st.download_button(
-                label="Download Timeline as CSV",
+                label="Download Timeline as Excel",
                 data=f,
-                file_name='project_timeline.csv',
-                mime='text/csv'
+                file_name='project_timeline.xlsx',
+                mime='text/xlsx'
             )
         os.remove(file_path)
-        os.remove(csv_file_path)
+        os.remove(excel_file_path)
