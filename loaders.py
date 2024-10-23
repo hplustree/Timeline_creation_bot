@@ -3,6 +3,7 @@ from langchain_community.document_loaders import UnstructuredExcelLoader
 from langchain_community.document_loaders import UnstructuredHTMLLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import Docx2txtLoader
 
 from dotenv import load_dotenv
 import os
@@ -19,6 +20,10 @@ def load_csv(file_path):
     data = loader.load()
     return data
 
+def load_docx(file_path):
+    loader = Docx2txtLoader(file_path=file_path)
+    data = loader.load()
+    return data
 
 def load_html_page(file_path):
     loader = UnstructuredHTMLLoader(file_path=file_path)
@@ -42,6 +47,8 @@ def load_file(file_path):
         return load_text(file_path)
     elif file_path.endswith('.pdf'):
         return load_pdf(file_path)
+    elif file_path.endswith('.docx'):
+        return load_docx(file_path)
     elif file_path.endswith('.html'):
         return load_html_page(file_path)
     else:
@@ -57,7 +64,7 @@ def split_file(file_path):
     chunks = split_text(text)
     return chunks
 
-# Example purpose
-# file_path=os.getenv('FILE_PATH')
+# # Example purpose
+# file_path=os.getenv('DOCX_PATH')
 # chunks=split_file(file_path)
 # print(chunks)
