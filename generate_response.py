@@ -53,5 +53,4 @@ def generate_timeline(requirement_chunks):
     # Extract the generated timeline from the response
     timeline_text = response.choices[0].message.content
 
-    print(timeline_text)
     return timeline_text
