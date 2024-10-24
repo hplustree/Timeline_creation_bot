@@ -26,8 +26,6 @@ if uploaded_file is not None:
     if st.button("Generate Timeline"):
         timeline_text = generate_timeline(chunks)
         # Save timeline to Excel
-        # if os.path.exists('project_timeline.xlsx'):
-        #     os.remove('project_timeline.xlsx')
         excel_file_path = process_gpt_timeline_response(timeline_text)
 
         st.subheader("Generated Timeline:")

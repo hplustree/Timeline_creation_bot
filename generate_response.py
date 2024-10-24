@@ -33,6 +33,7 @@ def generate_timeline(requirement_chunks):
                 "Output the timeline strictly in CSV format as follows:\n"
                 "Phase,Task,Subtask,Total Time (Days),Total Time (Hours)\n"
                 "Ensure that task and subtask descriptions do not contain any commas (,) to avoid issues in CSV parsing."
+                "Don't add a row in the end containing the Total duration of the project"
                 "Do not include any additional text or explanations."
                 "Strictly do not include '''  '''."
             )

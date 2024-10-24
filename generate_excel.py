@@ -1,7 +1,7 @@
 import csv
 import pandas as pd
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font, PatternFill
 import os
 
 def csv_to_dataframe(csv_content):
@@ -132,6 +132,13 @@ def process_gpt_timeline_response(csv_content):
         wb = load_workbook('project_timeline_temp.xlsx')
         ws = wb.active
 
+        # Define font and header color
+        header_font = Font(name='Arial', bold=True, size=12, color="000000")  # White font
+        header_fill = PatternFill(start_color="89CFF0", end_color="89CFF0", fill_type="solid")  # Blue fill
+        total_row_font = Font(name='Arial', bold=True, size=12, color="000000")  # White font for totals
+        total_row_fill = PatternFill(start_color="89CFF0", end_color="89CFF0", fill_type="solid")  # Blue fill for totals
+        default_font = Font(name='Arial', size=11)  # Default font for all other cells
+
         # Merge cells for 'Module' and 'Task'
         merge_cells(ws, 1, df)  # Merge 'Module' (Column 1 - A)
         merge_cells(ws, 2, df)  # Merge 'Task' (Column 2 - B)
@@ -146,6 +153,22 @@ def process_gpt_timeline_response(csv_content):
 
         # Add summary row with totals
         add_summary_row(ws, df)
+
+        # Apply Arial font to all cells
+        for row in ws.iter_rows():
+            for cell in row:
+                cell.font = default_font  # Set default font for all cells
+
+        # Set header styles
+        for cell in ws[1]:  # Assuming headers are in the first row
+            cell.font = header_font
+            cell.fill = header_fill
+
+        # Style the last row (summary totals)
+        last_row = len(df) + 2  # Assuming summary is the last row
+        for cell in ws[last_row]:  # Apply styles to the last row
+            cell.font = total_row_font
+            cell.fill = total_row_fill
 
         # Save the final Excel file with merged cells and adjusted widths
         wb.save('project_timeline.xlsx')
