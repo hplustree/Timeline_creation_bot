@@ -1,8 +1,6 @@
 import os
 import openai
-import csv
 from dotenv import load_dotenv
-from loaders import split_file
 
 load_dotenv()
 
@@ -55,8 +53,6 @@ def generate_timeline_with_feedback(timeline_text, feedback):
 # Phase 1,ML,Data gathering,7,8
 # Phase 1,ML,Data preprocssing pipline ,5,6        
 # """
-
 # feedback="Add Login and sign up functionality also"
-
 # print(generate_timeline_with_feedback(timeline_text, feedback))
 
