@@ -38,12 +38,12 @@ pip install -r requirements.txt
    ```bash
    git clone https://github.com/your-username/timeline-generator-bot.git
    cd timeline-generator-bot
-   ## Run the Streamlit App:
 
 2. Start the Streamlit app using the following command:
     ```bash
     streamlit run app.py
     ```
+
 3. Upload a File
     * Once the app is running, use the **Upload a DOCX or PDF file** button to upload your project requirements document.
     * Supported file types: `.docx` and `.pdf`.
@@ -67,6 +67,3 @@ timeline-generator-bot/
 ├── requirements.txt    # Python package dependencies
 └── README.md          # Project readme (this file)
 ```
-
-
-
