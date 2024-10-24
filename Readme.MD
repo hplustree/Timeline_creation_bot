@@ -19,7 +19,7 @@ This project allows users to upload a DOCX or PDF file containing project requir
   - `streamlit`
   - `openpyxl`
   - `pandas`
-  - `st_aggrid`
+  - `streamlit-aggrid`
 
 You can install the required packages using the following command:
 
