@@ -17,7 +17,6 @@ def csv_to_dataframe(csv_content):
     csv_reader = csv.reader(csv_content.splitlines())
     columns = next(csv_reader)
     data = list(csv_reader)
-
     df = pd.DataFrame(data, columns=columns)
 
     # Convert 'Total Time (Days)' and 'Total Time (Hours)' to numeric

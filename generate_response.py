@@ -10,8 +10,6 @@ load_dotenv()
 open_ai_key = os.getenv("OPENAI_API_KEY")
 open_ai_model = os.getenv("OPEN_AI_MODEL")
 client = openai.OpenAI(api_key=open_ai_key)
-file_path = os.getenv('DOCX_PATH')
-chunks = split_file(file_path)
 
 def generate_timeline(requirement_chunks):
     # Create messages for the chat model
@@ -20,7 +18,10 @@ def generate_timeline(requirement_chunks):
             "role": "system",
             "content": (
                 "You are an assistant that specializes in Machine Learning (ML), Full-Stack (FS) and DevOps engineering. You are skilled at project management and timeline generation, with a strong understanding of software development processes and best practices."
-                "Be mindful to avoid excessive durations in all the tasks, and suggest a practical timeline for efficient project delivery.")
+                "Be mindful to avoid excessive durations in all the tasks, and suggest a realistic timeline for efficient project delivery."
+                "Strictly ensure that no commas (,) are used in task or subtask descriptions."
+                "Your primary goal is to output CSV data with accurate formatting."
+                "Don't add backticks (```) in the csv generated, also don't add 'csv' keyword in starting of the csv file")
         },
         {
             "role": "user",
@@ -31,7 +32,7 @@ def generate_timeline(requirement_chunks):
                 f"{requirement_chunks}\n\n"
                 "Output the timeline strictly in CSV format as follows:\n"
                 "Phase,Task,Subtask,Total Time (Days),Total Time (Hours)\n"
-                "Strictly ensure that task and subtask descriptions do not contain commas."
+                "Ensure that task and subtask descriptions do not contain any commas (,) to avoid issues in CSV parsing."
                 "Do not include any additional text or explanations."
                 "Strictly do not include '''  '''."
             )
