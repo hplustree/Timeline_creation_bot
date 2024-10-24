@@ -27,7 +27,7 @@ def generate_timeline(requirement_chunks):
             "role": "user",
             "content": (
                 "Based on the following requirements, please create a comprehensive timeline for the project."
-                "The timeline should include all tasks and their respective subtasks, "
+                "The timeline should include all phases, tasks and their respective subtasks, "
                 "along with estimated durations in both hours and days for each task.\n\n"
                 f"{requirement_chunks}\n\n"
                 "Output the timeline strictly in CSV format as follows:\n"
@@ -52,4 +52,5 @@ def generate_timeline(requirement_chunks):
     # Extract the generated timeline from the response
     timeline_text = response.choices[0].message.content
 
+    print(timeline_text)
     return timeline_text
