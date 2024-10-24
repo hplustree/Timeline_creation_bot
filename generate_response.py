@@ -34,6 +34,7 @@ def generate_timeline(requirement_chunks):
                 "Phase,Task,Subtask,Total Time (Days),Total Time (Hours)\n"
                 "Ensure that task and subtask descriptions do not contain any commas (,) to avoid issues in CSV parsing."
                 "Don't add a row in the end containing the Total duration of the project"
+                "Strictly do not include documentation and planning task in the timeline"
                 "Do not include any additional text or explanations."
                 "Strictly do not include '''  '''."
             )
