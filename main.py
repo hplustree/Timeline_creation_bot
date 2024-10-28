@@ -68,7 +68,6 @@ if uploaded_file is not None:
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             )
 
-# Check if timeline text exists in session state for feedback
 if st.session_state.timeline_text:
     # Feedback Section
     st.subheader("Feedback on Timeline")
@@ -77,8 +76,20 @@ if st.session_state.timeline_text:
     # Button to apply feedback and modify the timeline
     if st.button("Update Timeline Based on Feedback"):
         if feedback:
+            # Extract Developer Side Queries from the original timeline
+            original_timeline_text = st.session_state.updated_timeline_text
+            sections = original_timeline_text.split("\n\n")
+            developer_queries_section = None
+            if len(sections) > 1 and sections[1].strip().lower().startswith("developer side queries"):
+                developer_queries_section = sections[1]
+
             # Generate the modified timeline based on feedback
             modified_timeline_text = generate_timeline_with_feedback(st.session_state.updated_timeline_text, feedback)
+
+            # Append the Developer Side Queries to the modified timeline if they exist
+            if developer_queries_section:
+                modified_timeline_text += f"\n\n{developer_queries_section}"
+
             # Update the session state with the modified timeline text
             st.session_state.updated_timeline_text = modified_timeline_text
             # Save the modified timeline to a new Excel file

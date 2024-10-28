@@ -116,15 +116,29 @@ def add_summary_row(ws, df):
 # Main function to process the GPT response and generate an Excel file
 def process_gpt_timeline_response(csv_content):
     """
-    Processes GPT's timeline response, extracts CSV data, and generates an Excel file with merged cells and adjusted column widths.
+    Processes GPT's timeline response, extracts CSV data, and generates an Excel file with merged cells,
+    adjusted column widths, and developer side queries included.
     
     Args:
-        gpt_response (str): The GPT response containing CSV timeline data.
+        csv_content (str): The GPT response containing CSV timeline data.
     """
     
     if csv_content:
-        df = csv_to_dataframe(csv_content)
+        # Split the CSV content into sections based on empty lines
+        sections = csv_content.split("\n\n")
         
+        # Process the main timeline data
+        timeline_data = sections[0]
+        df = csv_to_dataframe(timeline_data)
+        
+        # Check if developer queries are provided
+        developer_queries = sections[1] if len(sections) > 1 else None
+        developer_queries_list = developer_queries.splitlines() if developer_queries else []
+
+        # Remove the header "Developer Side Queries:" if it already exists in the list
+        if developer_queries_list and developer_queries_list[0].strip().lower().startswith("developer side queries"):
+            developer_queries_list.pop(0)
+
         # Save the DataFrame to a temporary Excel file
         save_dataframe_to_excel(df)
 
@@ -133,9 +147,9 @@ def process_gpt_timeline_response(csv_content):
         ws = wb.active
 
         # Define font and header color
-        header_font = Font(name='Arial', bold=True, size=12, color="000000")  # White font
+        header_font = Font(name='Arial', bold=True, size=12, color="000000")  # Black font
         header_fill = PatternFill(start_color="89CFF0", end_color="89CFF0", fill_type="solid")  # Blue fill
-        total_row_font = Font(name='Arial', bold=True, size=12, color="000000")  # White font for totals
+        total_row_font = Font(name='Arial', bold=True, size=12, color="000000")  # Black font for totals
         total_row_fill = PatternFill(start_color="89CFF0", end_color="89CFF0", fill_type="solid")  # Blue fill for totals
         default_font = Font(name='Arial', size=11)  # Default font for all other cells
 
@@ -145,17 +159,16 @@ def process_gpt_timeline_response(csv_content):
                             top=Side(style='thin'),
                             bottom=Side(style='thin'))
 
-        # Merge cells for 'Module' and 'Task'
-        merge_cells(ws, 1, df)  # Merge 'Module' (Column 1 - A)
+        # Merge cells for 'Phase', 'Task', and 'Subtask'
+        merge_cells(ws, 1, df)  # Merge 'Phase' (Column 1 - A)
         merge_cells(ws, 2, df)  # Merge 'Task' (Column 2 - B)
 
         # Adjust column widths
         auto_adjust_column_width(ws)
 
-        # Center align 'Timeline (Days)' and 'Timeline (Hours)' columns
-        center_align_column(ws, 4, 2, len(df) + 1)  # Align 'Timeline (Days)' (Column 4 - D)
-        center_align_column(ws, 5, 2, len(df) + 1)  # Align 'Timeline (Hours)' (Column 5 - E)
-
+        # Center align 'Total Time (Days)' and 'Total Time (Hours)' columns
+        center_align_column(ws, 4, 2, len(df) + 1)  # Align 'Total Time (Days)' (Column 4 - D)
+        center_align_column(ws, 5, 2, len(df) + 1)  # Align 'Total Time (Hours)' (Column 5 - E)
 
         # Add summary row with totals
         add_summary_row(ws, df)
@@ -179,14 +192,28 @@ def process_gpt_timeline_response(csv_content):
             cell.fill = total_row_fill
             cell.border = thin_border  # Add border to header cells
 
-        # Save the final Excel file with merged cells and adjusted widths
+        # Insert the Developer Side Queries section below the Total Time table
+        if developer_queries_list:
+            # Leave a blank row after the summary
+            dev_query_start_row = last_row + 2
+            ws.cell(row=dev_query_start_row, column=1, value="Developer Side Queries:")
+            ws.cell(row=dev_query_start_row, column=1).font = header_font
+            ws.cell(row=dev_query_start_row, column=1).alignment = Alignment(vertical='center', horizontal='left')
+
+            # Add each query to a new row
+            for idx, query in enumerate(developer_queries_list, start=dev_query_start_row + 1):
+                ws.cell(row=idx, column=1, value=query)
+                ws.cell(row=idx, column=1).alignment = Alignment(vertical='top', horizontal='left')
+                ws.cell(row=idx, column=1).font = default_font
+
+        # Save the final Excel file with merged cells, adjusted widths, and developer queries
         wb.save('project_timeline.xlsx')
 
         # Remove the temp excel
         if os.path.exists('project_timeline_temp.xlsx'):
             os.remove('project_timeline_temp.xlsx')
 
-        print("Timeline saved as 'project_timeline.xlsx' with merged cells and adjusted column widths.")
+        print("Timeline saved as 'project_timeline.xlsx' with merged cells, adjusted column widths, and developer queries.")
         return 'project_timeline.xlsx'
     else:
         print("No CSV content found in the GPT response.")
