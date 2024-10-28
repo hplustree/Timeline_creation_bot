@@ -13,14 +13,29 @@ st.set_page_config(layout="wide")
 st.title("Timeline Generator Bot")
 
 # Initialize session state variables
-if "uploaded_file_path" not in st.session_state:
-    st.session_state.uploaded_file_path = None
-if "timeline_text" not in st.session_state:
-    st.session_state.timeline_text = None
-if "excel_file_path" not in st.session_state:
-    st.session_state.excel_file_path = None
-if "updated_timeline_text" not in st.session_state:
-    st.session_state.updated_timeline_text = None
+session_keys = ["uploaded_file_path", "timeline_text", "excel_file_path", "updated_timeline_text"]
+for key in session_keys:
+    if key not in st.session_state:
+        st.session_state[key] = None
+
+def display_timeline(file_path, header):
+    """Display the timeline from the Excel file and provide a download button."""
+    st.subheader(header)
+    df = pd.read_excel(file_path)
+    gb = GridOptionsBuilder.from_dataframe(df)
+    gb.configure_default_column(resizable=True, filterable=False, sortable=False, editable=False)
+    gb.configure_grid_options(domLayout='normal')  # Adjust height based on content
+    grid_options = gb.build()
+    
+    AgGrid(df, gridOptions=grid_options, fit_columns_on_grid_load=True, theme="alpine")
+
+    with open(file_path, 'rb') as f:
+        st.download_button(
+            label=f"Download {header.split()[0]} as Excel",
+            data=f,
+            file_name=f"{header.split()[0].lower()}_project_timeline.xlsx",
+            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
 
 # File uploader
 uploaded_file = st.file_uploader("Upload a DOCX or PDF file", type=['docx', 'pdf'])
@@ -48,25 +63,7 @@ if uploaded_file is not None:
         # Store the Excel file path in session state
         st.session_state.excel_file_path = excel_file_path
 
-        st.subheader("Generated Timeline:")
-        # Display the Excel content as a DataFrame
-        df = pd.read_excel(excel_file_path)
-        # Create AgGrid options
-        gb = GridOptionsBuilder.from_dataframe(df)
-        gb.configure_default_column(resizable=True, filterable=False, sortable=False, editable=False)
-        gb.configure_grid_options(domLayout='normal')  # Adjust height based on content
-        grid_options = gb.build()
-
-        # Display the DataFrame using AgGrid with auto-sizing columns
-        AgGrid(df, gridOptions=grid_options, fit_columns_on_grid_load=True, theme="alpine")
-
-        with open(excel_file_path, 'rb') as f:
-            st.download_button(
-                label="Download Timeline as Excel",
-                data=f,
-                file_name='project_timeline.xlsx',
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
+        display_timeline(excel_file_path, "Generated Timeline:")
 
 if st.session_state.timeline_text:
     # Feedback Section
@@ -95,25 +92,7 @@ if st.session_state.timeline_text:
             # Save the modified timeline to a new Excel file
             modified_excel_file_path = process_gpt_timeline_response(modified_timeline_text)
 
-            st.subheader("Updated Timeline:")
-            # Display the modified Excel content as a DataFrame
-            modified_df = pd.read_excel(modified_excel_file_path)
-            # Create AgGrid options for the modified timeline
-            gb = GridOptionsBuilder.from_dataframe(modified_df)
-            gb.configure_default_column(resizable=True, filterable=False, sortable=False, editable=False)
-            gb.configure_grid_options(domLayout='normal')  # Adjust height based on content
-            modified_grid_options = gb.build()
-
-            # Display the modified DataFrame using AgGrid with auto-sizing columns
-            AgGrid(modified_df, gridOptions=modified_grid_options, fit_columns_on_grid_load=True, theme="alpine")
-
-            with open(modified_excel_file_path, 'rb') as f:
-                st.download_button(
-                    label="Download Updated Timeline as Excel",
-                    data=f,
-                    file_name='updated_project_timeline.xlsx',
-                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                )
+            display_timeline(modified_excel_file_path, "Updated Timeline:")
 
             # Clean up the modified file
             os.remove(modified_excel_file_path)

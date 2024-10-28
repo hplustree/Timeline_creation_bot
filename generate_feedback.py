@@ -47,12 +47,3 @@ def generate_timeline_with_feedback(timeline_text, feedback):
     modified_timeline_text = response.choices[0].message.content
     return modified_timeline_text
 
-#Example purpose
-# timeline_text="""Project Timeline
-# Phase,Task,Subtask,Total Time (Days),Total Time (Hours)
-# Phase 1,ML,Data gathering,7,8
-# Phase 1,ML,Data preprocssing pipline ,5,6        
-# """
-# feedback="Add Login and sign up functionality also"
-# print(generate_timeline_with_feedback(timeline_text, feedback))
-
