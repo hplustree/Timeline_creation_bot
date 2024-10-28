@@ -20,7 +20,7 @@ def generate_timeline(requirement_chunks):
                 "Be mindful to avoid excessive durations in all tasks, and suggest a realistic timeline for efficient project delivery."
                 "Strictly ensure that no commas (,) are used in task or subtask descriptions."
                 "Your primary goal is to output CSV data with accurate formatting for the timeline."
-                # "Additionally, you should generate developer-side queries that might arise based on the requirements."
+                "Additionally, you should generate developer-side queries that might arise based on the requirements."
                 "Do not include backticks (```) in the CSV generated, and do not use the keyword 'csv' at the start of the CSV file."
             )
         },
@@ -38,9 +38,9 @@ def generate_timeline(requirement_chunks):
                 "Strictly do not include documentation and planning tasks in the timeline."
                 "Do not include any additional text or explanations."
                 "Strictly do not include '''  '''.\n\n"
-                # "After the timeline, include a heading 'Developer Side Queries:' and provide a numbered list of potential developer-side queries based on the requirements."
-                # "The queries should cover areas that may need clarification, such as technical details, dependencies, assumptions, or any potential challenges that could arise during the project."
-                # "Ensure that the heading 'Developer Side Queries:' is clearly separate from the timeline."
+                "After the timeline, include a heading 'Developer Side Queries:' and provide a numbered list of potential developer-side queries based on the requirements."
+                "The queries should cover areas that may need clarification, such as technical details, dependencies, assumptions, or any potential challenges that could arise during the project."
+                "Ensure that the heading 'Developer Side Queries:' is clearly separate from the timeline."
             )
         }
     ]
