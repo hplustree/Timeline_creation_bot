@@ -1,6 +1,6 @@
 import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder
-from generate_response import generate_timeline
+from generate_response import generate_timeline, refine_timeline
 from generate_excel import process_gpt_timeline_response
 from generate_feedback import generate_timeline_with_feedback
 from loaders import split_file
@@ -23,7 +23,7 @@ if "updated_timeline_text" not in st.session_state:
     st.session_state.updated_timeline_text = None
 
 # File uploader
-uploaded_file = st.file_uploader("Upload a DOCX or PDF file", type=['docx', 'pdf'])
+uploaded_file = st.file_uploader("Upload a DOCX or PDF file", type=['docx', 'pdf','txt'])
 
 if uploaded_file is not None:
     # Process the file
@@ -38,7 +38,8 @@ if uploaded_file is not None:
     chunks = split_file(file_path)
     # Generate timeline button
     if st.button("Generate Timeline"):
-        timeline_text = generate_timeline(chunks)
+        timeline_text = refine_timeline(chunks)
+        print("Timeline: ", timeline_text)
         # Store the generated timeline text in session state
         st.session_state.timeline_text = timeline_text
         st.session_state.updated_timeline_text = timeline_text

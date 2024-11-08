@@ -4,12 +4,12 @@ from langchain_community.document_loaders import UnstructuredHTMLLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import Docx2txtLoader
+from generate_response import *
 
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=int(os.getenv('CHUNK_SIZE')),
@@ -65,6 +65,7 @@ def split_file(file_path):
     return chunks
 
 # # Example purpose
-# file_path=os.getenv('DOCX_PATH')
+# file_path=os.getenv('PDF_FILE_PATH')
 # chunks=split_file(file_path)
-# print(chunks)
+# timeline=refine_timeline(chunks)
+# print("Timeline: ", timeline)

@@ -1,11 +1,10 @@
 import os
 import openai
 from dotenv import load_dotenv
-from loaders import split_file
+from generate_feedback import generate_timeline_with_feedback
 
 load_dotenv()
 
-# Load environment variables
 open_ai_key = os.getenv("OPENAI_API_KEY")
 open_ai_model = os.getenv("OPEN_AI_MODEL")
 client = openai.OpenAI(api_key=open_ai_key)
@@ -45,7 +44,6 @@ def generate_timeline(requirement_chunks):
         }
     ]
 
-    # Call the OpenAI API to generate the timeline using chat completion
     response = client.chat.completions.create(
         model=open_ai_model,
         messages=messages,
@@ -54,7 +52,52 @@ def generate_timeline(requirement_chunks):
         temperature=float(os.getenv('TEMPERATURE')),
     )
 
-    # Extract the generated timeline from the response
     timeline_text = response.choices[0].message.content
+    return timeline_text
 
+def validate_timeline(requirement_chunks, timeline_text):
+    validation_messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are an experienced project reviewer specializing in validating project timelines against requirements. Only validate technical tasks related to development, engineering, and implementation, and ignore non-technical tasks such as tutorials, documentation, planning, or future expansion plans."
+                "Identify only technical missing tasks or subtasks and suggest improvements."
+                "Do not output explanations. Only provide a verdict 'Valid' if the timeline covers all technical requirements, or list only the technical missing tasks."
+            )
+        },
+        {
+            "role": "user",
+            "content": (
+                "Validate the following timeline against the given requirements and identify any missing technical tasks:\n\n"
+                f"Requirements:\n{requirement_chunks}\n\n"
+                f"Timeline:\n{timeline_text}\n\n"
+                "Output:\n- 'Valid' if the timeline covers all requirements.\n- List of missing technical tasks if there are any."
+            )
+        }
+    ]
+
+    response = client.chat.completions.create(
+        model=open_ai_model,
+        messages=validation_messages,
+        max_tokens=int(os.getenv('MAX_TOKENS')),
+        n=1,
+        temperature=float(os.getenv('TEMPERATURE')),
+    )
+
+    validation_result = response.choices[0].message.content.strip()
+
+    if validation_result.lower() == "valid":
+        validation_result = None
+
+    return validation_result
+
+def refine_timeline(requirement_chunks, max_iterations=5):
+    timeline_text = generate_timeline(requirement_chunks)
+
+    for iteration in range(max_iterations):
+        feedback = validate_timeline(requirement_chunks, timeline_text)
+        if feedback is None or feedback.strip().lower() in ["", "valid", "-none","- none"]:
+            break
+        else:
+            timeline_text = generate_timeline_with_feedback(timeline_text, feedback)
     return timeline_text
