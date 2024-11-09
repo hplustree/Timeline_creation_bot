@@ -18,6 +18,8 @@ def csv_to_dataframe(csv_content):
     columns = next(csv_reader)
     data = list(csv_reader)
     df = pd.DataFrame(data, columns=columns)
+    # Strip leading and trailing whitespaces from all column headers
+    df.columns = df.columns.str.strip()
 
     # Convert 'Total Time (Days)' and 'Total Time (Hours)' to numeric
     df['Total Time (Days)'] = pd.to_numeric(df['Total Time (Days)'], errors='coerce', downcast='integer')
@@ -114,7 +116,7 @@ def add_summary_row(ws, df):
     ws.merge_cells(start_row=summary_row, start_column=1, end_row=summary_row, end_column=3)
 
 # Main function to process the GPT response and generate an Excel file
-def process_gpt_timeline_response(csv_content):
+def process_gpt_timeline_response(csv_content, user_id, feedback = False):
     """
     Processes GPT's timeline response, extracts CSV data, and generates an Excel file with merged cells,
     adjusted column widths, and developer side queries included.
@@ -129,6 +131,7 @@ def process_gpt_timeline_response(csv_content):
         
         # Process the main timeline data
         timeline_data = sections[0]
+        # print("timeline_data: ", timeline_data)
         df = csv_to_dataframe(timeline_data)
         
         # Check if developer queries are provided
@@ -205,15 +208,19 @@ def process_gpt_timeline_response(csv_content):
                 ws.cell(row=idx, column=1, value=query)
                 ws.cell(row=idx, column=1).alignment = Alignment(vertical='top', horizontal='left')
                 ws.cell(row=idx, column=1).font = default_font
-
-        # Save the final Excel file with merged cells, adjusted widths, and developer queries
-        wb.save('project_timeline.xlsx')
-
+        
         # Remove the temp excel
         if os.path.exists('project_timeline_temp.xlsx'):
             os.remove('project_timeline_temp.xlsx')
 
-        print("Timeline saved as 'project_timeline.xlsx' with merged cells, adjusted column widths, and developer queries.")
-        return 'project_timeline.xlsx'
+        # Save the final Excel file with merged cells, adjusted widths, and developer queries
+        if not feedback:
+            wb.save(f'user_files/{user_id}_project_timeline.xlsx')
+            return f'user_files/{user_id}_project_timeline.xlsx'
+        else:
+            wb.save(f'user_files/{user_id}_updated_project_timeline.xlsx')
+            return f'user_files/{user_id}_updated_project_timeline.xlsx'
+
+        # print("Timeline saved as 'project_timeline.xlsx' with merged cells, adjusted column widths, and developer queries.")
     else:
         print("No CSV content found in the GPT response.")

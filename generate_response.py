@@ -33,6 +33,7 @@ def generate_timeline(requirement_chunks):
                 "Output the timeline strictly in CSV format as follows:\n"
                 "Phase,Task,Subtask,Total Time (Days),Total Time (Hours)\n"
                 "Ensure that task and subtask descriptions do not contain any commas (,) to avoid issues in CSV parsing."
+                "Strictly do not add any integer value in a subtask or task"
                 "Do not add a row at the end containing the total duration of the project."
                 "Strictly do not include documentation and planning tasks in the timeline."
                 "Do not include any additional text or explanations."
@@ -53,6 +54,7 @@ def generate_timeline(requirement_chunks):
     )
 
     timeline_text = response.choices[0].message.content
+    # print("timeline: ", timeline_text)
     return timeline_text
 
 def validate_timeline(requirement_chunks, timeline_text):
@@ -62,16 +64,16 @@ def validate_timeline(requirement_chunks, timeline_text):
             "content": (
                 "You are an experienced project reviewer specializing in validating project timelines against requirements. Only validate technical tasks related to development, engineering, and implementation, and ignore non-technical tasks such as tutorials, documentation, planning, or future expansion plans."
                 "Identify only technical missing tasks or subtasks and suggest improvements."
-                "Do not output explanations. Only provide a verdict 'Valid' if the timeline covers all technical requirements, or list only the technical missing tasks."
+                "Do not output explanations. Only provide a verdict 'Valid' if the timeline covers all technical requirements, or list only the technical missing tasks or subtasks."
             )
         },
         {
             "role": "user",
             "content": (
-                "Validate the following timeline against the given requirements and identify any missing technical tasks:\n\n"
+                "Validate the following timeline against the given requirements and identify any missing technical tasks or subtasks:\n\n"
                 f"Requirements:\n{requirement_chunks}\n\n"
                 f"Timeline:\n{timeline_text}\n\n"
-                "Output:\n- 'Valid' if the timeline covers all requirements.\n- List of missing technical tasks if there are any."
+                "Output:\n- 'Valid' if the timeline covers all requirements.\n- List of missing technical tasks or subtasks if there are any."
             )
         }
     ]
@@ -94,10 +96,21 @@ def validate_timeline(requirement_chunks, timeline_text):
 def refine_timeline(requirement_chunks, max_iterations=5):
     timeline_text = generate_timeline(requirement_chunks)
 
+    sections = timeline_text.split("\n\n")
+    developer_queries_section = None
+    if len(sections) > 1 and sections[1].strip().lower().startswith("developer side queries"):
+        developer_queries_section = sections[1]
+
     for iteration in range(max_iterations):
         feedback = validate_timeline(requirement_chunks, timeline_text)
         if feedback is None or feedback.strip().lower() in ["", "valid", "-none","- none"]:
             break
         else:
             timeline_text = generate_timeline_with_feedback(timeline_text, feedback)
+            # print(f"after feedback : {timeline_text}\n")
+
+    # Append the Developer Side Queries to the modified timeline if they exist
+    if developer_queries_section:
+        timeline_text += f"\n\n{developer_queries_section}"
+
     return timeline_text
