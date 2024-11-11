@@ -39,6 +39,8 @@ def remove_file(filepath):
         os.remove(filepath)
 
 if uploaded_file is not None:
+    if not os.path.exists("user_files"):
+        os.makedirs("user_files")
     # Remove previously uploaded file and Excel file for this session
     remove_file(st.session_state.uploaded_file_path)
     # remove_file(st.session_state.excel_file_path)
