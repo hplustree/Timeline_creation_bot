@@ -59,8 +59,7 @@ if uploaded_file is not None:
     # Generate timeline button
     if st.button("Generate Timeline"):
         timeline_text = refine_timeline(chunks)
-        # print("Timeline: ", timeline_text)
-        
+                
         # Store the generated timeline text in session state
         st.session_state.timeline_text = timeline_text
         st.session_state.updated_timeline_text = timeline_text

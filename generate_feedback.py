@@ -26,7 +26,7 @@ def generate_timeline_with_feedback(timeline_text, feedback):
             "role": "user",
             "content": (
                 "Based on the existing timeline and the following feedback, please revise the timeline for the project. "
-                "Modify the tasks, subtasks, and their durations according to the feedback. The revised timeline should keep the original structure and update the tasks and durations as needed.\n\n"
+                "Modify the tasks, subtasks, and their durations according to the feedback. The revised timeline should keep the original structure and update the tasks, subtasks and durations as needed.\n\n"
                 f"Original Timeline:\n{timeline_text}\n\n"
                 f"Feedback:\n{feedback}\n\n"
                 "Output the revised timeline in the same format as below:\n"

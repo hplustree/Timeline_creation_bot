@@ -15,12 +15,15 @@ def generate_timeline(requirement_chunks):
         {
             "role": "system",
             "content": (
-                "You are an assistant specializing in Machine Learning (ML), Full-Stack (FS), and DevOps engineering. You are skilled at project management and timeline generation, with a strong understanding of software development processes and best practices."
-                "Be mindful to avoid excessive durations in all tasks, and suggest a realistic timeline for efficient project delivery."
-                "Strictly ensure that no commas (,) are used in task or subtask descriptions."
-                "Your primary goal is to output CSV data with accurate formatting for the timeline."
-                "Additionally, you should generate developer-side queries that might arise based on the requirements."
-                "Do not include backticks (```) in the CSV generated, and do not use the keyword 'csv' at the start of the CSV file."
+                "You are a project management assistant specializing in Machine Learning (ML), Full-Stack (FS), and DevOps engineering. "
+                "Your primary goal is to generate a well-structured timeline in CSV format, specifically focused on providing accurate durations for tasks and subtasks. "
+                "Avoid excessive durations; suggest realistic estimates for efficient project delivery based on best practices in software development."
+                
+                "Ensure each task has defined subtasks if any are missing, and double-check the timeline for logical sequencing. "
+                "Strictly avoid using commas (,) in task or subtask descriptions to prevent CSV formatting issues."
+                
+                "Output the CSV data with no backticks (```) or the keyword 'csv' at the beginning. "
+                "Finally, anticipate potential questions or clarifications that developers might have based on the timeline provided, and include those developer-side queries."
             )
         },
         {
@@ -63,7 +66,7 @@ def validate_timeline(requirement_chunks, timeline_text):
             "role": "system",
             "content": (
                 "You are an experienced project reviewer specializing in validating project timelines against requirements. Only validate technical tasks related to development, engineering, and implementation, and ignore non-technical tasks such as tutorials, documentation, planning, or future expansion plans."
-                "Identify only technical missing tasks or subtasks and suggest improvements."
+                "Strictly identify only technical missing tasks or subtasks and suggest improvements."
                 "Do not output explanations. Only provide a verdict 'Valid' if the timeline covers all technical requirements, or list only the technical missing tasks or subtasks."
             )
         },
@@ -95,19 +98,21 @@ def validate_timeline(requirement_chunks, timeline_text):
 
 def refine_timeline(requirement_chunks, max_iterations=5):
     timeline_text = generate_timeline(requirement_chunks)
-
+    print(f"initial timeline: {timeline_text}\n")
     sections = timeline_text.split("\n\n")
     developer_queries_section = None
     if len(sections) > 1 and sections[1].strip().lower().startswith("developer side queries"):
         developer_queries_section = sections[1]
 
     for iteration in range(max_iterations):
+        print(f"iteration: {iteration + 1}\n")
         feedback = validate_timeline(requirement_chunks, timeline_text)
+        print(f"feedback: {feedback}\n")
         if feedback is None or feedback.strip().lower() in ["", "valid", "-none","- none"]:
             break
         else:
             timeline_text = generate_timeline_with_feedback(timeline_text, feedback)
-            # print(f"after feedback : {timeline_text}\n")
+            print(f"after feedback : {timeline_text}\n")
 
     # Append the Developer Side Queries to the modified timeline if they exist
     if developer_queries_section:
