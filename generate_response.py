@@ -98,21 +98,21 @@ def validate_timeline(requirement_chunks, timeline_text):
 
 def refine_timeline(requirement_chunks, max_iterations=5):
     timeline_text = generate_timeline(requirement_chunks)
-    print(f"initial timeline: {timeline_text}\n")
+    # print(f"initial timeline: {timeline_text}\n")
     sections = timeline_text.split("\n\n")
     developer_queries_section = None
     if len(sections) > 1 and sections[1].strip().lower().startswith("developer side queries"):
         developer_queries_section = sections[1]
 
     for iteration in range(max_iterations):
-        print(f"iteration: {iteration + 1}\n")
+        # print(f"iteration: {iteration + 1}\n")
         feedback = validate_timeline(requirement_chunks, timeline_text)
-        print(f"feedback: {feedback}\n")
+        # print(f"feedback: {feedback}\n")
         if feedback is None or feedback.strip().lower() in ["", "valid", "-none","- none"]:
             break
         else:
             timeline_text = generate_timeline_with_feedback(timeline_text, feedback)
-            print(f"after feedback : {timeline_text}\n")
+            # print(f"after feedback : {timeline_text}\n")
 
     # Append the Developer Side Queries to the modified timeline if they exist
     if developer_queries_section:
