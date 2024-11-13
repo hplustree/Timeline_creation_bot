@@ -61,7 +61,8 @@ pip install -r requirements.txt
 timeline-generator-bot/
 │
 ├── main.py              # Main Streamlit app file
-├── generate_response.py # Handles GPT timeline generation
+├── generate_response.py #Handles GPT timeline generation
+├── generate_final_timeline.py #Handles the main timeline generation
 ├── generate_excel.py   # Processes GPT response to create Excel file
 ├── loaders.py         # File loader to split DOCX/PDF into chunks
 ├── requirements.txt    # Python package dependencies

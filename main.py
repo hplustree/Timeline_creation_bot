@@ -1,8 +1,9 @@
 import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder
-from generate_response import refine_timeline
+from generate_final_timeline import refine_timeline
 from generate_excel import process_gpt_timeline_response
-from generate_feedback import generate_timeline_with_feedback
+from generate_feedback import generate_timeline_with_user_feedback
+from  generate_final_timeline import *
 from loaders import split_file
 import pandas as pd
 import os
@@ -106,7 +107,7 @@ if st.session_state.timeline_text:
                 developer_queries_section = sections[1]
 
             # Generate the modified timeline based on feedback
-            modified_timeline_text = generate_timeline_with_feedback(st.session_state.updated_timeline_text, feedback)
+            modified_timeline_text = generate_timeline_with_user_feedback(st.session_state.updated_timeline_text, feedback)
 
             # Append the Developer Side Queries to the modified timeline if they exist
             if developer_queries_section:

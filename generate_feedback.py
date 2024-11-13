@@ -9,7 +9,7 @@ open_ai_model = os.getenv("OPEN_AI_MODEL")
 client = openai.OpenAI(api_key=open_ai_key)
 
 
-def generate_timeline_with_feedback(timeline_text, feedback):
+def generate_timeline_with_user_feedback(timeline_text, feedback):
     messages = [
         {
             "role": "system",
