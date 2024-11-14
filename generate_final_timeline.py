@@ -138,7 +138,10 @@ def generate_durations_for_timeline(timeline_text):
                 "You are a project assistant skilled in estimating durations for tasks and subtasks for  Machine Learning (ML), Full-Stack (FS), and DevOps engineering based on the tasks and subtasks in the provided timeline, "
                 "Estimate realistic durations in days and hours. Update the timeline by adding 'Total Time (Days)' and 'Total Time (Hours)' columns."
                 "Strictly ignore durations in Developer Side Queries if there is any."
-                "Output the CSV data with no backticks (```) or the keyword 'csv' at the beginning. "
+                "Strictly ensure that if there are no subtask or there is a dash (-), then estimate the duration based on the task associated, don't estimate any duration as 0"
+                "Strictly ensure that if there are no subtask then add a dash (-) in place of that if not already there"
+                "Strictly ensure that the number of columns are same throughout the generated csv, correct it by removing or adding the commas if missed earlier"
+                "Output the CSV data with no backticks (```) or the keyword 'csv' at the beginning."
             )
         },
         {
@@ -208,16 +211,20 @@ def validate_timeline_for_durations(timeline_text):
 
 def refine_timeline(requirement_chunks, max_iterations=5):
     timeline_text = generate_timeline(requirement_chunks)
+    # print(f"initial timeline: {timeline_text}\n")
     sections = timeline_text.split("\n\n")
     developer_queries_section = None
     if len(sections) > 1 and sections[1].strip().lower().startswith("developer side queries"):
         developer_queries_section = sections[1]
 
     for iteration in range(max_iterations):
+        # print(f"iteration: {iteration + 1}\n")
         feedback = validate_timeline(requirement_chunks, timeline_text)
+        # print(f"feedback: {feedback}\n")
         if feedback is None:
             break
         timeline_text = generate_timeline_with_feedback(timeline_text, feedback)
+        # print(f"after feedback : {timeline_text}\n")
 
     timeline_text = evaluate_durations(timeline_text)
     if developer_queries_section:
